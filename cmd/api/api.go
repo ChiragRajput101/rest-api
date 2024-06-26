@@ -31,7 +31,7 @@ func (s *APIServer) Run() error {
 
 
 
-	log.Println("listening on: ", s.addr)
+	log.Println("listening on", s.addr)
 
 	// mux.Router implements the http.Handler interface hence ListenAndServe(addr, http.Handler) works with mux.Router as the param passed
 	return http.ListenAndServe(s.addr, router) 
