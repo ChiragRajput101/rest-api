@@ -2,19 +2,24 @@ package user
 
 import (
 	// "encoding/json"
+	// "errors"
+	"fmt"
 	"net/http"
 
+	"github.com/ChiragRajput101/rest-api/services/auth"
 	"github.com/ChiragRajput101/rest-api/types"
 	"github.com/ChiragRajput101/rest-api/utils"
 	"github.com/gorilla/mux"
 )
 
 type Handler struct {
-	
+	store types.UserStore
 }
 
-func NewHandler() *Handler {
-	return &Handler{}
+func NewHandler(store types.UserStore) *Handler {
+	return &Handler{
+		store: store,
+	}
 }
 
 // router.HandleFunc("/path/to/be/reg", handlerFunction(http.ResponseWriter, *http.Request))
@@ -47,11 +52,36 @@ func (h *Handler) handleRegister(w http.ResponseWriter, r *http.Request) {
 	var payload types.RegisterUserPayload
 
 	// Parse -> Unmarshalling
+	// Unmarshalled form in stored in v 
 	if err := utils.ParseJSON(r, &payload); err != nil {
 		utils.WriteError(w, http.StatusBadRequest, err)
+		return
 	}
 
 	// check if the user already exixts
-	// if not then create a new account
+
+	_, err := h.store.GetUserByEmail(payload.Email)
+
+	if err != nil {
+		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("user with email %v, already exists", payload.Email))
+		return
+	}
+
+	// create the user if non-existant
+
+	hashedPassword, err := auth.HashPassword(payload.Password)
+	
+	err1 := h.store.CreateUser(types.User{
+		FirstName: payload.FirstName,
+		LastName: payload.LastName,
+		Email: payload.Email,
+		Password: hashedPassword,
+	})
+
+	if err1 != nil {
+		utils.WriteError(w, http.StatusInternalServerError, err)
+		return
+	}
+
 }
 
