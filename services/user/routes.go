@@ -9,6 +9,7 @@ import (
 	"github.com/ChiragRajput101/rest-api/services/auth"
 	"github.com/ChiragRajput101/rest-api/types"
 	"github.com/ChiragRajput101/rest-api/utils"
+	"github.com/go-playground/validator/v10"
 	"github.com/gorilla/mux"
 )
 
@@ -58,11 +59,20 @@ func (h *Handler) handleRegister(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// validate the payload
+
+	if err := utils.Validate.Struct(payload); err != nil {
+		errs := err.(validator.ValidationErrors)
+		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("invalid payload %v", errs))
+		return
+	}
+
 	// check if the user already exixts
 
 	_, err := h.store.GetUserByEmail(payload.Email)
 
-	if err != nil {
+	// if err == nil, then we got a user with the specified email
+	if err == nil {
 		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("user with email %v, already exists", payload.Email))
 		return
 	}
