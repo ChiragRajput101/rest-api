@@ -72,10 +72,11 @@ func (s *Store) GetUserByID(id int) (*types.User, error) {
 	u := new(types.User) // dynamic allocation of the Type, return *Type (0-val)
 
 	for rows.Next() {
-		_, err := scanRowsIntoUser(rows)
+		user, err := scanRowsIntoUser(rows)
 		if err != nil {
 			return nil, err
 		}
+		u = user
 	}
 
 	if u.ID == 0 {

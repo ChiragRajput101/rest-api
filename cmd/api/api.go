@@ -5,6 +5,9 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/ChiragRajput101/rest-api/services/cart"
+	"github.com/ChiragRajput101/rest-api/services/order"
+	"github.com/ChiragRajput101/rest-api/services/product"
 	"github.com/ChiragRajput101/rest-api/services/user"
 	"github.com/gorilla/mux"
 )
@@ -30,7 +33,21 @@ func (s *APIServer) Run() error {
 	userService := user.NewHandler(userStore)
 	userService.RegisterRoutes(subrouter) // passing the subrouter to match the prefix: /api/v1
 
+	// Product Service
+	productStore := product.NewStore(s.db)
+	productService := product.NewHandler(productStore, userStore)
+	productService.RegisterRoutes(subrouter)
 
+	// order
+	orderStore := order.NewStore(s.db)
+
+	// cart
+	cartHandler := cart.NewHandler(productStore, orderStore, userStore)
+	cartHandler.RegisterRoutes(subrouter)
+
+	
+	// Serve static files
+	router.PathPrefix("/").Handler(http.FileServer(http.Dir("static")))
 
 	log.Println("listening on", s.addr)
 
