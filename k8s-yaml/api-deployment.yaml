@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-deployment
+  labels:
+    app: api
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: api
+  template:
+    metadata:
+      labels:
+        app: api
+    spec:
+      containers:
+      - name: api
+        image: chiragrajput/ecom-api:v1
+        ports:
+        - containerPort: 8080
+        env:
+        - name: DB_HOST
+          valueFrom: 
+            configMapKeyRef:
+              name: api-configmap
+              key: db_host
+        - name: DB_USER
+          valueFrom: 
+            configMapKeyRef:
+              name: api-configmap
+              key: db_user
+        - name: DB_NAME
+          valueFrom: 
+            configMapKeyRef:
+              name: api-configmap
+              key: db_name           

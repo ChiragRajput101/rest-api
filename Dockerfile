@@ -1,5 +1,3 @@
-# syntax=docker/dockerfile:1
-
 # Build the application from source
 FROM golang:1.22.4 AS build-stage
   WORKDIR /app
@@ -24,3 +22,7 @@ FROM scratch AS build-release-stage
   EXPOSE 8080
 
   ENTRYPOINT ["/api"]
+
+# docker hub
+# docker tag local-image:tagname new-repo:tagname
+# docker push new-repo:tagname  
