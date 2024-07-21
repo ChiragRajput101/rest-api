@@ -3,6 +3,6 @@ kind: ConfigMap
 metadata:
   name: api-configmap
 data:
-  db_host: mysql-service
+  db_host: mysql-service # needs to be the name of the service we're trying to connect to
   db_user: root
   db_name: test

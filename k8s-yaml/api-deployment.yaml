@@ -35,3 +35,19 @@ spec:
             configMapKeyRef:
               name: api-configmap
               key: db_name           
+
+---
+# for catering to requests from outside the cluster
+apiVersion: v1
+kind: Service
+metadata:
+  name: api-external-service
+spec:
+  selector:
+    app: api # selector to which this service caters
+  type: LoadBalancer # indicates an external service -> assigned an external IP addr
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080                
+      nodePort: 30000 # for browser -> range: [30000,32767]
