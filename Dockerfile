@@ -23,6 +23,6 @@ FROM scratch AS build-release-stage
 
   ENTRYPOINT ["/api"]
 
-# docker hub
+# publish to docker hub
 # docker tag local-image:tagname new-repo:tagname
 # docker push new-repo:tagname  

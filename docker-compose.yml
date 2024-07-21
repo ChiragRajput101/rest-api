@@ -1,12 +1,14 @@
+# compose creates a custom netw on which the service are conn, providing an internal IP so that they all can communicate with each other
 services:
-
   db:
     image: mysql:8.0.37
+    # mounting a volume for persistence
     volumes:
       - db_data:/var/lib/mysql
     environment:
-      MYSQL_ROOT_PASSWORD: 1234
-      MYSQL_DATABASE: test
+      MYSQL_ROOT_PASSWORD: 1234 # required
+      MYSQL_DATABASE: test # optional parameter
+    # we wont be exposing any ports for the host machine to directly interact with this 
 
   api:
     build: 
@@ -16,9 +18,9 @@ services:
     volumes:
       - .:/go/src/api
     ports:
-      - "8080:8080"
+      - "8080:8080" # exposed for the local machine (works only for loopback(localhost))
     environment:
-      DB_HOST: db
+      DB_HOST: db # points to the mysql service (here the mysql service is named db)
       DB_USER: root
       DB_PASSWORD: 
       DB_NAME: test
